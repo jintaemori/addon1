@@ -62,27 +62,29 @@ class AP(PropertyGroup):
     eq : StringProperty(name = "Equation", description = "Equation", default = "")    
     start : IntProperty(name = "Start", description = "Start", default = 1)        
     end : IntProperty(name = "End", description = "End", default = 10)        
-    step : IntProperty(name = "Step", description = "Step", default = 1)        
+    step : IntProperty(name = "Step", description = "Step", default = 1)  
+    st : StringProperty(name = "Selection", description = "Selection", default = "")    
 
 
 
 class ObjectAdder(Operator):
-    """Tooltip"""
     bl_idname = "add.ob"
     bl_label = "Add objects"
     bl_description = "Adds objects on the equation"
     
     def execute(self, context):
         scene = context.scene.your_properties
+        st = scene.st        
         eq = scene.eq
         start = scene.start
         end = scene.end
         step = scene.step
+
         eq1 = eq.split('=')
         res = evaluate2(eq1[0], eq1[1], start, end, step)
         for i in res:
-            k = bpy.ops.object
-            k.duplicate_move(OBJECT_OT_duplicate={"linked":False, "mode":'TRANSLATION'}, TRANSFORM_OT_translate={"value":(0, 0, 0)})
+            bpy.data.objects[st].select_set(True)
+            bpy.ops.object.duplicate_move(OBJECT_OT_duplicate={"linked":False, "mode":'TRANSLATION'}, TRANSFORM_OT_translate={"value":(0, 0, 0)})
             bpy.context.active_object.location.x = i[0]
             bpy.context.active_object.location.y = i[1]
             bpy.context.active_object.location.z = i[2]
@@ -98,8 +100,10 @@ class AddonPanel1(Panel):
     
     def draw(self, context):
         layout = self.layout
-        scene = context.scene.your_properties
+        scene = context.scene.your_properties   
         
+        col = layout.column()
+        col.prop_search(scene, "st", context.scene, "objects")
         col = layout.column()
         col.prop(scene, "eq")
         col = layout.column()
