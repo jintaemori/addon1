@@ -3,21 +3,26 @@ from math import *
 
 from bpy.types import(Panel, Operator, PropertyGroup)
 
-from bpy.props import(StringProperty, PointerProperty, IntProperty)
+from bpy.props import(StringProperty, PointerProperty, IntProperty, FloatProperty)
 
 
 def evaluate2(l, r, start, stop, step):
-    res = []    
+    res = []  
+    in_mat = []
+    k = start
+    while k < stop:
+        in_mat.append(k)
+        k += step  
     if ('x' in r):
         if ('y' in l):
-            for i in range(start, stop, step):
+            for i in in_mat:
                 x = i
                 y = eval(r)
                 z = 0
                 res.append([x, y, z])
             return res
         if ('z' in l):
-            for i in range(start, stop, step):
+            for i in in_mat:
                 x = i
                 y = 0
                 z = eval(r)
@@ -26,14 +31,14 @@ def evaluate2(l, r, start, stop, step):
                 
     if ('y' in r):
         if ('x' in l):
-            for i in range(start, stop, step):
+            for i in in_mat:
                 y = i
                 x = eval(r)
                 z = 0
                 res.append([x, y, z])
             return res
         if ('z' in l):
-            for i in range(start, stop, step):
+            for i in in_mat:
                 y = i
                 x = 0
                 z = eval(r)
@@ -42,14 +47,14 @@ def evaluate2(l, r, start, stop, step):
                 
     if ('z' in r):
         if ('x' in l):
-            for i in range(start, stop, step):
+            for i in in_mat:
                 z = i
                 x = eval(r)
                 y = 0
                 res.append([x, y, z])
             return res
         if ('y' in l):
-            for i in range(start, stop, step):
+            for i in in_mat:
                 z = i
                 x = 0
                 y = eval(r)
@@ -62,7 +67,7 @@ class AP(PropertyGroup):
     eq : StringProperty(name = "Equation", description = "Equation", default = "")    
     start : IntProperty(name = "Start", description = "Start", default = 1)        
     end : IntProperty(name = "End", description = "End", default = 10)        
-    step : IntProperty(name = "Step", description = "Step", default = 1)  
+    step : FloatProperty(name = "Step", description = "Step", default = 1)  
     st : StringProperty(name = "Selection", description = "Selection", default = "")    
 
 
@@ -82,12 +87,14 @@ class ObjectAdder(Operator):
 
         eq1 = eq.split('=')
         res = evaluate2(eq1[0], eq1[1], start, end, step)
-        for i in res:
-            bpy.data.objects[st].select_set(True)
+        bpy.ops.object.select_all(action='DESELECT')
+        bpy.data.objects[st].select_set(True)
+        for i in res:    
             bpy.ops.object.duplicate_move(OBJECT_OT_duplicate={"linked":False, "mode":'TRANSLATION'}, TRANSFORM_OT_translate={"value":(0, 0, 0)})
             bpy.context.active_object.location.x = i[0]
             bpy.context.active_object.location.y = i[1]
             bpy.context.active_object.location.z = i[2]
+        bpy.ops.object.select_all(action='DESELECT')
         return {'FINISHED'}
         
 
