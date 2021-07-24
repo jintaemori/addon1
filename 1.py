@@ -3,7 +3,7 @@ from math import *
 
 from bpy.types import(Panel, Operator, PropertyGroup)
 
-from bpy.props import(StringProperty, PointerProperty, IntProperty, FloatProperty)
+from bpy.props import(StringProperty, PointerProperty, IntProperty, FloatProperty, BoolProperty)
 
 
 def evaluate2(l, r, start, stop, step):
@@ -121,7 +121,8 @@ class AP(PropertyGroup):
     start : IntProperty(name = "Start", description = "Start", default = 1)        
     end : IntProperty(name = "End", description = "End", default = 10)        
     step : FloatProperty(name = "Step", description = "Step", default = 1)  
-    st : StringProperty(name = "Selection", description = "Selection", default = "")    
+    st : StringProperty(name = "Selection", description = "Selection", default = "")   
+    bool : BoolProperty(name = "Rotation", description = "Rotation", default = 0) 
     
     '''3DEQ'''
     eq1 : StringProperty(name = "Equation", description = "Equation", default = "")    
@@ -132,6 +133,7 @@ class AP(PropertyGroup):
     end2 : IntProperty(name = "End2", description = "End2", default = 10)        
     step2 : FloatProperty(name = "Step2", description = "Step2", default = 1) 
     st1 : StringProperty(name = "Selection", description = "Selection1", default = "")
+    bool1 : BoolProperty(name = "Rotation1", description = "Rotation", default = 0)
     
     '''3DEQi'''
     eqx : StringProperty(name = "Equation x", description = "Equation", default = "")  
@@ -141,6 +143,7 @@ class AP(PropertyGroup):
     endi : IntProperty(name = "Endi", description = "End", default = 10)        
     stepi : FloatProperty(name = "Stepi", description = "Step", default = 1)  
     sti : StringProperty(name = "Selectioni", description = "Selection", default = "")
+    booli : BoolProperty(name = "Rotationi", description = "Rotation", default = 0)
 
 
 class ObjectAdder1(Operator):
@@ -155,6 +158,7 @@ class ObjectAdder1(Operator):
         start = scene.start
         end = scene.end
         step = scene.step
+        bool = scene.bool
 
         eq1 = eq.split('=')
         res = evaluate2(eq1[0], eq1[1], start, end, step)
@@ -185,6 +189,7 @@ class ObjectAdder2(Operator):
         start2 = scene.start2
         end2 = scene.end2
         step2 = scene.step2
+        bool1 = scene.bool1
 
         eq2 = eq1.split('=')
         res = evaluate3(eq2[0], eq2[1], start1, end1, step1, start2, end2, step2)
@@ -214,6 +219,7 @@ class ObjectAdder3(Operator):
         starti = scene.starti
         endi = scene.endi
         stepi = scene.stepi
+        booli = scene.booli
 
         res = evaluatei(eqx, eqy, eqz, starti, endi, stepi)
         bpy.ops.object.select_all(action='DESELECT')
@@ -228,6 +234,7 @@ class ObjectAdder3(Operator):
         bpy.ops.object.select_all(action='TOGGLE')
         return {'FINISHED'}
         
+###Panels
 
 class AddonPanel1(Panel):
     bl_label = "2 Variable"
@@ -250,10 +257,9 @@ class AddonPanel1(Panel):
         col.prop(scene, "start")
         col.prop(scene, "end")
         col.prop(scene, "step")
+        col.prop(scene, "bool")
         col = layout.column()
-        col.operator("add.ob")  
-        
-        
+        col.operator("add.ob")      
         
 class AddonPanel2(Panel):
     bl_label = "3 Variable"
@@ -282,6 +288,7 @@ class AddonPanel2(Panel):
         col.prop(scene, "start2")
         col.prop(scene, "end2")
         col.prop(scene, "step2")
+        col.prop(scene, "bool1")
         col = layout.column()
         col.operator("add.ob1")
         
@@ -310,6 +317,7 @@ class AddonPanel3(Panel):
         col.prop(scene, "starti")
         col.prop(scene, "endi")
         col.prop(scene, "stepi")
+        col.prop(scene, "booli")
         col = layout.column()
         col.operator("add.ob2")
         
